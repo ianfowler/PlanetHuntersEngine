@@ -128,7 +128,7 @@ std_scaler = StandardScaler()
 x_train = scaled = std_scaler.fit_transform(x_train)
 x_test = std_scaler.fit_transform(x_test)
 
-#Dimentioanlity reduction
+#Dimentioanlity reduction is cool
 from sklearn.decomposition import PCA
 pca = PCA() 
 X_train = pca.fit_transform(X_train)
