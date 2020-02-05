@@ -8,9 +8,6 @@ import math
 temp = pd.read_csv('KeplerFinal.txt') #insert real path
 temp = temp.dropna().sort_values(by=['Teff']) #Table sorted by Teff least to greatest
 data = list(temp['Teff']) 
-
-print("test")
-
 binTempArr = [data[0]]
 
 def bins(minTempDifference,minNumIndicies): #populates the binTempArr array with the ending (last) temperature values of each bin
@@ -29,6 +26,7 @@ bins(100,100)
 #Inner orbital radius of habitable zone
 def roi(temp):
     return (0.62817*temp**3)-(1235.15*temp**2)
+
 #Outer orbital radius
 def roo(temp):
     return (1.52*temp**3)-(2988.75*temp**2)
@@ -48,35 +46,49 @@ def transitDepth(planetRadius,starRadius):
 def orbitalPeriod(randOrbital,starMass):
     return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
 
-multiarray=[]
-labels=np.array(["Count","Time of Injunction" ,"Orbital Period","Planet radius","Orbital radius" ,"Orbital Inclination","Eccentricity","Time Between Measurements","Transit Time","# of Measurements"])
-multiarray.append(labels)
+def oradius_range(midTemp, steps=steps_o):
+    roi_ =int(roi(midTemp))
+    roo_ =int(roo(midTemp))
+    stepfinder_oradius = int((roo_-roi_)/50)#Divides oradius into 50 steps
+    return range(roi_,roo_,stepfinder_oradius)
 
-count=0
-timeBetweenMeasure=20/(24*60)
-TOJ=0 #time of injunction
-orbitalInclination=0
-eccentricity=0
-for bins in range (1,len(binTempArr)):
-    upper=binTempArr[bins]
-    lower=binTempArr[bins-1]
-    midTemp=(lower+upper)/2
-    roi2=roi(midTemp)
-    roo2=roo(midTemp)
-    starRadius2=starRadius(midTemp)
-    starMass2=starMass(midTemp)
-    stepfinder=((roo2-roi2)/50)#Divides oradius into 50 steps
-    for pradius in range (3390*10**3,11467*10**3,160000):#Planet radius; 50 steps
-        for oradius in range (int(roi2),int(roo2),int(stepfinder)):#Orbital radius; 50 steps -> 2500 steps per bin
-            transitTime2=(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
-            orbitalPeriod2=orbitalPeriod(oradius,starMass2)  #Find Units
-            total_measurements = transitTime2 / timeBetweenMeasure
-            count=count+1         
-            params=np.array([count,TOJ,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime2,total_measurements])
-            multiarray.append(params)
-multiarray=np.array(multiarray)
+def pradius_range(midTemp, steps=steps_p):
+    min_planet_pradius = 3390*10**3
+    max_planet_pradius = 11467*10**3
+    stepfinder_pradius = int((min_planet_pradius + max_planet_pradius)/50)
+    return range(min_planet_pradius,max_planet_pradius,stepfinder_pradius)
 
-with open("BinAnalysis.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerows(multiarray)
+def gen_param_csv(filename, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0)
+    rows_list = []
+    for bins in range (1,len(binTempArr)):
+        upper=binTempArr[bins]
+        lower=binTempArr[bins-1]
+        midTemp=(lower+upper)/2 # Approximation of temperature
 
+        starRadius_ = starRadius(midTemp)
+        starMass_ = starMass(midTemp)
+        
+        for pradius in pradius_range(midTemp):#Planet radius; 50 steps
+            for oradius in oradius_range(midTemp):#Orbital radius; 50 steps -> 2500 steps per bin
+                # transitTime_ =(transitTime(starRadius_,oradius,starMass_))/60 #Minutes
+                orbitalPeriod_ =orbitalPeriod(oradius,starMass_)  #Find Units
+
+                # params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
+                rows_list.append({
+                    "bin_number":bins,
+                    "lower_bin":lower,
+                    "upper_bin":upper,
+                    "temperature":midTemp,
+                    "t0":t0,
+                    "per":orbitalPeriod_,
+                    "rp":pradius,
+                    "a":oradius,
+                    "inc":orbitalInclination,
+                    "ecc":eccentricity,
+                    "w":0,
+                })
+
+    pd.DataFrame(rows_list).to_csv(filename)
+
+
+gen_param_csv("bin_params.csv")
