@@ -24,6 +24,11 @@ def bins(minTempDifference,minNumIndicies): #populates the binTempArr array with
 
 bins(100,100)
 
+
+STELLAR_RADIUS = 695.7*10**6
+
+
+
 #Inner orbital radius of habitable zone
 def roi(temp):
     return (0.62817*temp**3)-(1235.15*temp**2)
@@ -53,8 +58,8 @@ def oradius_range(midTemp, steps):
     return np.linspace(min(roi_, roo_), max(roi_, roo_), steps)
 
 def pradius_range(midTemps, steps):
-    min_planet_pradius = (3390*10**3)/(695.7*10**6) # In Stellar Radii
-    max_planet_pradius = 11467*10**3/(695.7*10**6)
+    min_planet_pradius = 3390*10**3/STELLAR_RADIUS # In Stellar Radii
+    max_planet_pradius = 11467*10**3/STELLAR_RADIUS
     return np.linspace(min_planet_pradius, max_planet_pradius, steps)
 
 def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
