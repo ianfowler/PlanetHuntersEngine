@@ -46,15 +46,6 @@ def orbitalPeriod(randOrbital,starMass):
     return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
 
 
-"""
-t0:     time of inferior conjunction
-per:    orbital period
-rp:     planet radius (in units of stellar radii)
-a:      semi-major axis (in units of stellar radii)
-inc:    orbital inclination (in degrees)
-ecc:    eccentricity
-w:      longitude of periastron (in degrees) - default 0
-"""
 step_df = pd.DataFrame(columns=["count","t0" ,"per","rp","a" ,"inc","ecc","w"])
 count=0
 timeBetweenMeasure=20/(24*60)
@@ -78,7 +69,7 @@ def pradius_range(midTemp, steps=steps_p):
     stepfinder_pradius = int((min_planet_pradius + max_planet_pradius)/50)
     return range(min_planet_pradius,max_planet_pradius,stepfinder_pradius)
 
-
+rows_list = []
 for bins in range (1,len(binTempArr)):
     upper=binTempArr[bins]
     lower=binTempArr[bins-1]
@@ -93,7 +84,7 @@ for bins in range (1,len(binTempArr)):
             orbitalPeriod_ =orbitalPeriod(oradius,starMass_)  #Find Units
 
             # params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
-            step_df.append({
+            rows_list.append({
                 "bin_number":bins,
                 "lower_bin":lower,
                 "upper_bin":upper,
@@ -105,6 +96,6 @@ for bins in range (1,len(binTempArr)):
                 "inc":orbitalInclination,
                 "ecc":eccentricity,
                 "w":0,
-            }, ignore_index=True)
+            })
 
-pd.to_csv("bin_params.csv")
+pd.DataFrame(rows_list).to_csv("bin_params.csv")
