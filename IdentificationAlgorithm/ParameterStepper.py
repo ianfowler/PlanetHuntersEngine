@@ -45,7 +45,7 @@ def transitDepth(planetRadius,starRadius):
     return (planetRadius**2)/(starRadius**2)
 
 def orbitalPeriod(randOrbital,starMass):
-    return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
+    return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10**11)/(starMass*6.67))
 
 def oradius_range(midTemp, steps):
     roi_ = roi(midTemp)
@@ -59,6 +59,7 @@ def pradius_range(midTemps, steps):
 
 def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
     
+    
     for bins in range (1,len(binTempArr)):
         rows_list = []
 
@@ -68,9 +69,10 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
 
         starRadius_ = starRadius(midTemp)
         starMass_ = starMass(midTemp)
+        print(list(pradius_range(midTemp, steps_p)))
         
-        for pradius in pradius_range(midTemp, steps_p):#Planet radius; 50 steps
-            for oradius in oradius_range(midTemp, steps_o):#Orbital radius; 50 steps -> 2500 steps per bin
+        for pradius in list(pradius_range(midTemp, steps_p)):#Planet radius; 50 steps
+            for oradius in list(oradius_range(midTemp, steps_o)):#Orbital radius; 50 steps -> 2500 steps per bin
                 # transitTime_ =(transitTime(starRadius_,oradius,starMass_))/60 #Minutes
                 orbitalPeriod_ = orbitalPeriod(oradius,starMass_)  #Find Units
 
