@@ -79,4 +79,3 @@ with open("BinAnalysis.csv", "w") as f:
     writer = csv.writer(f)
     writer.writerows(multiarray)
 
-#Comment
