@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import csv 
 import random
 import math
+import os
 
 temp = pd.read_csv('KeplerFinal.txt') #insert real path
 temp = temp.dropna().sort_values(by=['Teff']) #Table sorted by Teff least to greatest
@@ -46,21 +47,23 @@ def transitDepth(planetRadius,starRadius):
 def orbitalPeriod(randOrbital,starMass):
     return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
 
-def oradius_range(midTemp, steps=steps_o):
+def oradius_range(midTemp, steps):
     roi_ =int(roi(midTemp))
     roo_ =int(roo(midTemp))
     stepfinder_oradius = int((roo_-roi_)/50)#Divides oradius into 50 steps
     return range(roi_,roo_,stepfinder_oradius)
 
-def pradius_range(midTemp, steps=steps_p):
+def pradius_range(midTemps, steps):
     min_planet_pradius = 3390*10**3
     max_planet_pradius = 11467*10**3
     stepfinder_pradius = int((min_planet_pradius + max_planet_pradius)/50)
     return range(min_planet_pradius,max_planet_pradius,stepfinder_pradius)
 
-def gen_param_csv(filename, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0)
-    rows_list = []
+def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
+    
     for bins in range (1,len(binTempArr)):
+        rows_list = []
+
         upper=binTempArr[bins]
         lower=binTempArr[bins-1]
         midTemp=(lower+upper)/2 # Approximation of temperature
@@ -68,8 +71,8 @@ def gen_param_csv(filename, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, 
         starRadius_ = starRadius(midTemp)
         starMass_ = starMass(midTemp)
         
-        for pradius in pradius_range(midTemp):#Planet radius; 50 steps
-            for oradius in oradius_range(midTemp):#Orbital radius; 50 steps -> 2500 steps per bin
+        for pradius in pradius_range(midTemp, steps_p):#Planet radius; 50 steps
+            for oradius in oradius_range(midTemp, steps_o):#Orbital radius; 50 steps -> 2500 steps per bin
                 # transitTime_ =(transitTime(starRadius_,oradius,starMass_))/60 #Minutes
                 orbitalPeriod_ =orbitalPeriod(oradius,starMass_)  #Find Units
 
@@ -87,8 +90,14 @@ def gen_param_csv(filename, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, 
                     "ecc":eccentricity,
                     "w":0,
                 })
+        try:
+            os.mkdir("{}/bin_{}/".format(folder_name,bins))
+        except OSError:
+            print ("Creation of the directory failed")
+        else:
+            print ("Successfully created the directory")
 
-    pd.DataFrame(rows_list).to_csv(filename)
+        pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bins))
 
 
-gen_param_csv("bin_params.csv")
+gen_param_csv("bins")
