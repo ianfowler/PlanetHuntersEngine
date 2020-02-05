@@ -55,7 +55,7 @@ inc:    orbital inclination (in degrees)
 ecc:    eccentricity
 w:      longitude of periastron (in degrees) - default 0
 """
-step_df = pandas.DataFrame(columns=["count","t0" ,"per","rp","a" ,"inc","ecc","w"])
+step_df = pd.DataFrame(columns=["count","t0" ,"per","rp","a" ,"inc","ecc","w"])
 count=0
 timeBetweenMeasure=20/(24*60)
 t0=0 #time of injunction
@@ -76,7 +76,7 @@ def pradius_range(midTemp, steps=steps_p):
     min_planet_pradius = 3390*10**3
     max_planet_pradius = 11467*10**3
     stepfinder_pradius = int((min_planet_pradius + max_planet_pradius)/50)
-    return range(roi_,roo_,stepfinder_oradius)
+    return range(min_planet_pradius,max_planet_pradius,stepfinder_pradius)
 
 
 for bins in range (1,len(binTempArr)):
@@ -89,22 +89,22 @@ for bins in range (1,len(binTempArr)):
     
     for pradius in pradius_range(midTemp):#Planet radius; 50 steps
         for oradius in oradius_range(midTemp):#Orbital radius; 50 steps -> 2500 steps per bin
-            transitTime_ =(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
-            orbitalPeriod_ =orbitalPeriod(oradius,starMass2)  #Find Units
+            # transitTime_ =(transitTime(starRadius_,oradius,starMass_))/60 #Minutes
+            orbitalPeriod_ =orbitalPeriod(oradius,starMass_)  #Find Units
 
-            params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
+            # params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
             step_df.append({
-                "bin_number":bins
+                "bin_number":bins,
                 "lower_bin":lower,
                 "upper_bin":upper,
                 "temperature":midTemp,
                 "t0":t0,
-                "per":orbitalPeriod2,
+                "per":orbitalPeriod_,
                 "rp":pradius,
                 "a":oradius,
                 "inc":orbitalInclination,
                 "ecc":eccentricity,
-                "w":0
-            })
+                "w":0,
+            }, ignore_index=True)
 
 pd.to_csv("bin_params.csv")
