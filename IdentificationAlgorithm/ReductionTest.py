@@ -32,7 +32,7 @@ from sklearn.svm import SVC
 import csv
 
 categ = {2: 1,1: 0}
-test_data = pd.read_csv('exoTest.csv').fillna(0)
+test_data = pd.read_csv('../../exoTest.csv').fillna(0)
 test_data.LABEL = [categ[item] for item in test_data.LABEL]
 
 def reduce_memory(df):
@@ -95,6 +95,6 @@ x_test = std_scaler.fit_transform(x_test)
 # x_test = pca.transform(x_test)
 
 #Output
-with open("ReducedData.csv", "w") as f:
+with open("../../exoTest.csv", "w") as f:
     writer = csv.writer(f)
     writer.writerows(x_test)
