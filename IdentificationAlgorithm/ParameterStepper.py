@@ -48,31 +48,74 @@ def transitDepth(planetRadius,starRadius):
 def orbitalPeriod(randOrbital,starMass):
     return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
 
-multiarray=[]
-labels=np.array(["Count","Time of Injunction" ,"Orbital Period","Planet radius","Orbital radius" ,"Orbital Inclination","Eccentricity","Time Between Measurements","Transit Time","# of Measurements"])
-multiarray.append(labels)
+# multiarray=[]
+# labels=np.array()
+# multiarray.append(labels)
+
+
+"""
+t0:     time of inferior conjunction
+per:    orbital period
+rp:     planet radius (in units of stellar radii)
+a:      semi-major axis (in units of stellar radii)
+inc:    orbital inclination (in degrees)
+ecc:    eccentricity
+w:      longitude of periastron (in degrees) - default 0
+"""
+
+step_df = pandas.DataFrame(columns=["count","t0" ,"per","rp","a" ,"inc","ecc","w"])
+
 
 count=0
 timeBetweenMeasure=20/(24*60)
-TOJ=0 #time of injunction
+t0=0 #time of injunction
 orbitalInclination=0
 eccentricity=0
+
+
+steps_p = 50
+steps_o = 50
+
+def oradius_range(midTemp, steps=steps_o):
+    roi_ =int(roi(midTemp))
+    roo_ =int(roo(midTemp))
+    stepfinder_oradius = int((roo_-roi_)/50)#Divides oradius into 50 steps
+    return range(roi_,roo_,stepfinder_oradius)
+
+def pradius_range(midTemp, steps=steps_p):
+    min_planet_pradius = 3390*10**3
+    max_planet_pradius = 11467*10**3
+    stepfinder_pradius = int((min_planet_pradius + max_planet_pradius)/50)
+    return range(roi_,roo_,stepfinder_oradius)
+
+
 for bins in range (1,len(binTempArr)):
     upper=binTempArr[bins]
     lower=binTempArr[bins-1]
-    midTemp=(lower+upper)/2
-    roi2=roi(midTemp)
-    roo2=roo(midTemp)
-    starRadius2=starRadius(midTemp)
-    starMass2=starMass(midTemp)
-    stepfinder=((roo2-roi2)/50)#Divides oradius into 50 steps
-    for pradius in range (3390*10**3,11467*10**3,160000):#Planet radius; 50 steps
-        for oradius in range (int(roi2),int(roo2),int(stepfinder)):#Orbital radius; 50 steps -> 2500 steps per bin
-            transitTime2=(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
-            orbitalPeriod2=orbitalPeriod(oradius,starMass2)  #Find Units
-            total_measurements = transitTime2 / timeBetweenMeasure
-            count=count+1         
-            params=np.array([count,TOJ,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime2,total_measurements])
+    midTemp=(lower+upper)/2 # Approximation of temperature
+
+    starRadius_ = starRadius(midTemp)
+    starMass_ = starMass(midTemp)
+    
+    for pradius in pradius_range(midTemp):#Planet radius; 50 steps
+        for oradius in oradius_range(midTemp):#Orbital radius; 50 steps -> 2500 steps per bin
+            transitTime_ =(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
+            orbitalPeriod_ =orbitalPeriod(oradius,starMass2)  #Find Units
+            
+            params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
+            step_df.append({
+                "lower_bin":lower,
+                "upper_bin":upper,
+                "temperature":midTemp,
+                "t0":t0,
+                "per":orbitalPeriod2,
+                "rp":pradius,
+                "a":oradius,
+                "inc":orbitalInclination,
+                "ecc":eccentricity,
+                "w":0
+            })
+            
             multiarray.append(params)
 multiarray=np.array(multiarray)
 
