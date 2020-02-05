@@ -53,8 +53,8 @@ def oradius_range(midTemp, steps):
     return np.linspace(min(roi_, roo_), max(roi_, roo_), steps)
 
 def pradius_range(midTemps, steps):
-    min_planet_pradius = 3390*10**3
-    max_planet_pradius = 11467*10**3
+    min_planet_pradius = (3390*10**3)/(695.7*10**6) # In Stellar Radii
+    max_planet_pradius = 11467*10**3/(695.7*10**6)
     return np.linspace(min_planet_pradius, max_planet_pradius, steps)
 
 def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
