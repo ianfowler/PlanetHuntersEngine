@@ -9,6 +9,7 @@ temp = pd.read_csv('KeplerFinal.txt') #insert real path
 temp = temp.dropna().sort_values(by=['Teff']) #Table sorted by Teff least to greatest
 data = list(temp['Teff']) 
 
+print("test")
 
 binTempArr = [data[0]]
 
