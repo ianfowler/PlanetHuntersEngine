@@ -82,6 +82,7 @@ y_test = test_data["LABEL"]
 x_test = normalize(x_test)
 
 #Applying of gaussian filter
+x_test = x_test.astype(np.float32)
 x_test = ndimage.filters.gaussian_filter(x_test, sigma=10)
 
 #Feature scaling
@@ -89,9 +90,9 @@ std_scaler = StandardScaler()
 x_test = std_scaler.fit_transform(x_test)
 
 #Dimentioanlity reduction
-from sklearn.decomposition import PCA
-pca = PCA() 
-x_test = pca.transform(x_test)
+# from sklearn.decomposition import PCA
+# pca = PCA() 
+# x_test = pca.transform(x_test)
 
 #Output
 with open("ReducedData.csv", "w") as f:
