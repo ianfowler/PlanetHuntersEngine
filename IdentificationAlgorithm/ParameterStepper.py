@@ -8,9 +8,6 @@ import math
 temp = pd.read_csv('KeplerFinal.txt') #insert real path
 temp = temp.dropna().sort_values(by=['Teff']) #Table sorted by Teff least to greatest
 data = list(temp['Teff']) 
-
-print("test")
-
 binTempArr = [data[0]]
 
 def bins(minTempDifference,minNumIndicies): #populates the binTempArr array with the ending (last) temperature values of each bin
@@ -48,10 +45,6 @@ def transitDepth(planetRadius,starRadius):
 def orbitalPeriod(randOrbital,starMass):
     return (2*math.pi*randOrbital**1.5)*math.sqrt((randOrbital*10^11)/(starMass*6.67))
 
-# multiarray=[]
-# labels=np.array()
-# multiarray.append(labels)
-
 
 """
 t0:     time of inferior conjunction
@@ -62,10 +55,7 @@ inc:    orbital inclination (in degrees)
 ecc:    eccentricity
 w:      longitude of periastron (in degrees) - default 0
 """
-
 step_df = pandas.DataFrame(columns=["count","t0" ,"per","rp","a" ,"inc","ecc","w"])
-
-
 count=0
 timeBetweenMeasure=20/(24*60)
 t0=0 #time of injunction
@@ -101,9 +91,10 @@ for bins in range (1,len(binTempArr)):
         for oradius in oradius_range(midTemp):#Orbital radius; 50 steps -> 2500 steps per bin
             transitTime_ =(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
             orbitalPeriod_ =orbitalPeriod(oradius,starMass2)  #Find Units
-            
+
             params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
             step_df.append({
+                "bin_number":bins
                 "lower_bin":lower,
                 "upper_bin":upper,
                 "temperature":midTemp,
@@ -115,11 +106,5 @@ for bins in range (1,len(binTempArr)):
                 "ecc":eccentricity,
                 "w":0
             })
-            
-            multiarray.append(params)
-multiarray=np.array(multiarray)
 
-with open("BinAnalysis.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerows(multiarray)
-
+pd.to_csv("bin_params.csv")
