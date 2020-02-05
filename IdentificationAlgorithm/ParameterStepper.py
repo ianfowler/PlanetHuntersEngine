@@ -12,7 +12,7 @@ data = list(temp['Teff'])
 
 binTempArr = [data[0]]
 
-def bins(minTempDifference,minNumIndicies):
+def bins(minTempDifference,minNumIndicies): #populates the binTempArr array with the ending (last) temperature values of each bin
     lastTemp = 0
     numIndicies = 0
     for i in range(0,len(data)): #makes sure each bin is at least 100 Teff wide, and each bin has at least 100 points
@@ -25,7 +25,7 @@ def bins(minTempDifference,minNumIndicies):
 
 bins(100,100)
 
-#Inner orbital radius
+#Inner orbital radius of habitable zone
 def roi(temp):
     return (0.62817*temp**3)-(1235.15*temp**2)
 #Outer orbital radius
@@ -53,7 +53,7 @@ multiarray.append(labels)
 
 count=0
 timeBetweenMeasure=20/(24*60)
-TOJ=0
+TOJ=0 #time of injunction
 orbitalInclination=0
 eccentricity=0
 for bins in range (1,len(binTempArr)):
@@ -65,8 +65,8 @@ for bins in range (1,len(binTempArr)):
     starRadius2=starRadius(midTemp)
     starMass2=starMass(midTemp)
     stepfinder=((roo2-roi2)/50)#Divides oradius into 50 steps
-    for pradius in range (3390*10**3,11467*10**3,160000):#About 50 steps
-        for oradius in range (int(roi2),int(roo2),int(stepfinder)):
+    for pradius in range (3390*10**3,11467*10**3,160000):#Planet radius; 50 steps
+        for oradius in range (int(roi2),int(roo2),int(stepfinder)):#Orbital radius; 50 steps -> 2500 steps per bin
             transitTime2=(transitTime(starRadius2,oradius,starMass2))/60 #Minutes
             orbitalPeriod2=orbitalPeriod(oradius,starMass2)  #Find Units
             total_measurements = transitTime2 / timeBetweenMeasure
