@@ -42,7 +42,7 @@ def simulated_lightcurve(
         sample_space,
         t0,per,rp,a,inc,ecc,w,
         limb_darkening=LimbDarkening.QUADRATIC,
-        ld_coeff=[[], [0.3], [3.1, 0.3], [0.5, 0.1, 0.1, -0.1]],
+        ld_coeff=[[], [0.3], [0.1, 0.3], [0.5, 0.1, 0.1, -0.1]],
         noise_function = lambda x: [f - np.random.normal(0,0.0004) for f in x]
         ):
     params = batman.TransitParams()
@@ -62,3 +62,9 @@ def simulated_lightcurve(
     flux = noise_function(m.light_curve(params))
 
     return flux
+
+
+
+# 3197
+
+

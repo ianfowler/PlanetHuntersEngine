@@ -5,28 +5,11 @@ import csv
 import random
 import math
 import os
+from BinFinder import *
 
-temp = pd.read_csv('KeplerFinal.txt') #insert real path
-temp = temp.dropna().sort_values(by=['Teff']) #Table sorted by Teff least to greatest
-data = list(temp['Teff']) 
-binTempArr = [data[0]]
-
-def bins(minTempDifference,minNumIndicies): #populates the binTempArr array with the ending (last) temperature values of each bin
-    lastTemp = 0
-    numIndicies = 0
-    for i in range(0,len(data)): #makes sure each bin is at least 100 Teff wide, and each bin has at least 100 points
-        numIndicies += 1
-        if data[i] - lastTemp >= minTempDifference and numIndicies >= minNumIndicies:
-            lastTemp = data[i]
-            binTempArr.append(lastTemp)
-            numIndicies = 0
-
-
-bins(100,100)
-
+binTemperatures = bins(100, 100)
 
 STELLAR_RADIUS = 695.7*10**6
-
 
 
 #Inner orbital radius of habitable zone
@@ -66,11 +49,11 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
     
     used_existing_directories = False
 
-    for bins in range (1,len(binTempArr)):
+    for bin in range (1,len(binTemperatures)):
         rows_list = []
 
-        upper=binTempArr[bins]
-        lower=binTempArr[bins-1]
+        upper=binTemperatures[bin]
+        lower=binTemperatures[bin-1]
         midTemp=(lower+upper)/2 # Approximation of temperature
 
         starRadius_ = starRadius(midTemp)
@@ -83,7 +66,7 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
                 orbitalPeriod_ = orbitalPeriod(oradius,starMass_)  #Find Units
 
                 rows_list.append({
-                    "bin_number":bins,
+                    "bin_number":bin,
                     "lower_bin":lower,
                     "upper_bin":upper,
                     "temperature":midTemp,
@@ -96,11 +79,11 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
                     "w":0,
                 })
         try:
-            os.mkdir("{}/bin_{}/".format(folder_name,bins))
+            os.mkdir("{}/bin_{}/".format(folder_name,bin))
         except OSError:
             used_existing_directories = True
             
-        pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bins))
+        pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bin))
     
     if used_existing_directories:
         print ("Used existing directories for bins. Files were possibly overwritten") 
