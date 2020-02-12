@@ -64,7 +64,8 @@ def pradius_range(midTemps, steps):
 
 def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
     
-    
+    used_existing_directories = False
+
     for bins in range (1,len(binTempArr)):
         rows_list = []
 
@@ -74,14 +75,13 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
 
         starRadius_ = starRadius(midTemp)
         starMass_ = starMass(midTemp)
-        print(list(pradius_range(midTemp, steps_p)))
         
+
         for pradius in list(pradius_range(midTemp, steps_p)):#Planet radius; 50 steps
             for oradius in list(oradius_range(midTemp, steps_o)):#Orbital radius; 50 steps -> 2500 steps per bin
-                # transitTime_ =(transitTime(starRadius_,oradius,starMass_))/60 #Minutes
+
                 orbitalPeriod_ = orbitalPeriod(oradius,starMass_)  #Find Units
 
-                # params=np.array([count,t0,orbitalPeriod2,pradius,oradius,orbitalInclination,eccentricity,timeBetweenMeasure,transitTime_ ,total_measurements])
                 rows_list.append({
                     "bin_number":bins,
                     "lower_bin":lower,
@@ -98,9 +98,12 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
         try:
             os.mkdir("{}/bin_{}/".format(folder_name,bins))
         except OSError:
-            print ("Creation of the directory failed")
-
+            used_existing_directories = True
+            
         pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bins))
+    
+    if used_existing_directories:
+        print ("Used existing directories for bins. Files were possibly overwritten") 
 
 
 gen_param_csv("bins")
