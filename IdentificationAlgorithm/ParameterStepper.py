@@ -45,9 +45,16 @@ def pradius_range(midTemps, steps):
     max_planet_pradius = 11467*10**3/STELLAR_RADIUS
     return np.linspace(min_planet_pradius, max_planet_pradius, steps)
 
-def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=0, eccentricity=0):
+def gen_param_csv(folder_name="bins", steps_p=50, steps_o=50, t0=0, orbitalInclination=90, eccentricity=0):
     
     used_existing_directories = False
+
+    for bin in range(1, len(binTemperatures)):
+        try:
+            os.mkdir("{}/bin_{}/".format(folder_name,bin))
+        except OSError:
+            print("exists")
+
 
     for bin in range (1,len(binTemperatures)):
         rows_list = []
@@ -78,15 +85,19 @@ def gen_param_csv(folder_name, steps_p=50, steps_o=50, t0=0, orbitalInclination=
                     "ecc":eccentricity,
                     "w":0,
                 })
+
         try:
+            print("making {}/bin_{}/".format(folder_name,bin))
+            os.mkdir("{}/".format(folder_name))
             os.mkdir("{}/bin_{}/".format(folder_name,bin))
         except OSError:
             used_existing_directories = True
-            
-        pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bin))
+
+        if rows_list:
+            pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bin))
+        
+        
     
     if used_existing_directories:
         print ("Used existing directories for bins. Files were possibly overwritten") 
 
-
-gen_param_csv("bins")
