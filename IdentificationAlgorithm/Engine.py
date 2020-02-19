@@ -9,10 +9,10 @@ from ParameterStepper import gen_param_csv
 
 FOLDER_NAME = "trial_1"
 SAMPLE_LENGTH = 3197
+TRANSIT_TIME_MINUTES = 30
 
 # From the star temperature array, step through the stellar parameters we will feed into the fake transits. 
-gen_param_csv(folder_name=FOLDER_NAME, length=SAMPLE_LENGTH)
-
+gen_param_csv(folder_name=FOLDER_NAME, length=SAMPLE_LENGTH, transit_time_minutes=TRANSIT_TIME_MINUTES)
 
 HEAD = ["FLUX.{}".format(i) for i in range(1,SAMPLE_LENGTH+1)]
 

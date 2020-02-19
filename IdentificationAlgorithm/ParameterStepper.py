@@ -45,15 +45,26 @@ def pradius_range(midTemps, steps):
     max_planet_pradius = 11467*10**3/STELLAR_RADIUS
     return np.linspace(min_planet_pradius, max_planet_pradius, steps)
 
-def gen_param_csv(folder_name="bins", length=3197, steps_p=50, steps_o=50, orbitalInclination=90, eccentricity=0):
+def gen_param_csv(folder_name="bins", length=3197, steps_p=50, steps_o=50, orbitalInclination=90, eccentricity=0, transit_time_minutes=30):
     
     used_existing_directories = False
 
+    try:
+        os.mkdir(folder_name)
+        os.mkdir(folder_name+"/bin_"+bin)
+    except OSError:
+        print("Using existing directory "+folder_name)
+
+    overwriting = False
     for bin in range(1, len(binTemperatures)):
         try:
             os.mkdir("{}/bin_{}/".format(folder_name,bin))
         except OSError:
-            print("exists")
+            if bin>1:
+                overwriting = True
+
+    if overwriting:
+        print("Files were overwritten. If this isn't the intended effect, be sure to use a new directory next time.")
 
     for bin in range (1,len(binTemperatures)):
         rows_list = []
@@ -76,7 +87,7 @@ def gen_param_csv(folder_name="bins", length=3197, steps_p=50, steps_o=50, orbit
                     "lower_bin":lower,
                     "upper_bin":upper,
                     "temperature":midTemp,
-                    "t0":int(30.0 * length / 2.0),
+                    "t0":int(transit_time_minutes * length / 2.0),
                     "per":orbitalPeriod_,
                     "rp":pradius,
                     "a":oradius,
