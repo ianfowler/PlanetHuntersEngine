@@ -45,7 +45,7 @@ def pradius_range(midTemps, steps):
     max_planet_pradius = 11467*10**3/STELLAR_RADIUS
     return np.linspace(min_planet_pradius, max_planet_pradius, steps)
 
-def gen_param_csv(folder_name="bins", steps_p=50, steps_o=50, t0=0, orbitalInclination=90, eccentricity=0):
+def gen_param_csv(folder_name="bins", length=3197, steps_p=50, steps_o=50, orbitalInclination=90, eccentricity=0):
     
     used_existing_directories = False
 
@@ -54,7 +54,6 @@ def gen_param_csv(folder_name="bins", steps_p=50, steps_o=50, t0=0, orbitalIncli
             os.mkdir("{}/bin_{}/".format(folder_name,bin))
         except OSError:
             print("exists")
-
 
     for bin in range (1,len(binTemperatures)):
         rows_list = []
@@ -77,7 +76,7 @@ def gen_param_csv(folder_name="bins", steps_p=50, steps_o=50, t0=0, orbitalIncli
                     "lower_bin":lower,
                     "upper_bin":upper,
                     "temperature":midTemp,
-                    "t0":t0,
+                    "t0":int(30.0 * length / 2.0),
                     "per":orbitalPeriod_,
                     "rp":pradius,
                     "a":oradius,
@@ -86,12 +85,6 @@ def gen_param_csv(folder_name="bins", steps_p=50, steps_o=50, t0=0, orbitalIncli
                     "w":0,
                 })
 
-        try:
-            print("making {}/bin_{}/".format(folder_name,bin))
-            os.mkdir("{}/".format(folder_name))
-            os.mkdir("{}/bin_{}/".format(folder_name,bin))
-        except OSError:
-            used_existing_directories = True
 
         if rows_list:
             pd.DataFrame(rows_list).to_csv("{}/bin_{}/parameters.csv".format(folder_name,bin))

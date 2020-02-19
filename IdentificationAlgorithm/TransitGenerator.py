@@ -11,10 +11,11 @@ class LimbDarkening(Enum):
     NONLINEAR = 3
 
 
+
 """
 Generates linspace based on cadences and the length between cadences (minutes)
 """
-def sampling_range(cadences, cadence_length_minutes=30):
+def sampling_range(cadences, cadence_length_minutes):
     duration_minutes = cadences*cadence_length_minutes
     return np.linspace(0, duration_minutes, cadences)
 
@@ -41,12 +42,12 @@ returns: np array flux
 def simulated_lightcurve(
         sample_space,
         p,
-        limb_darkening=LimbDarkening.QUADRATIC,
-        ld_coeff=[[], [0.3], [0.1, 0.3], [0.5, 0.1, 0.1, -0.1]],
-        noise_function = lambda x: [f - np.random.normal(0,0.0004) for f in x]
+        limb_darkening=LimbDarkening.LINEAR,
+        ld_coeff=[[], [0.65], [0.1, 0.3], [0.5, 0.1, 0.1, -0.1]],
+        noise_array = np.zeros(3197)
         ):
     params = batman.TransitParams()
-    params.t0 = p["t0"] 
+    params.t0 = p["t0"]
     params.per = p["per"]
     params.rp = p["rp"]
     params.a = p["a"]
@@ -59,21 +60,21 @@ def simulated_lightcurve(
     params.limb_dark = ["uniform", "linear", "quadratic", "nonlinear"][ld]
 
     m = batman.TransitModel(params, sample_space)
-    flux = noise_function(m.light_curve(params))
+    flux = m.light_curve(params) + noise_array
 
     return flux
 
 
-def row_to_lightcurve(header, row, length=3197):
+def row_to_lightcurve(header, row, length=3197, CADENCE_LENGTH = 30):
     p = {}
 
     must_contain = ["t0","per","rp","a","inc","ecc","w"]
     for attribute in must_contain:
         if attribute not in header:
-            raise ValueError("Need header to contain {}".format(must_contain))
+            raise ValueError("Couldn't find "+attribute+". Need header to contain {}".format(must_contain))
         p[attribute] = row[header.index(attribute)]
 
-    sample_space = sampling_range(length)
+    sample_space = sampling_range(length, CADENCE_LENGTH)
 
     return simulated_lightcurve(sample_space, p)
     
