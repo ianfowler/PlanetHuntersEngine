@@ -2,7 +2,7 @@ import os
 import csv
 from TransitGenerator import row_to_lightcurve
 from ParameterStepper import gen_param_csv
-
+from GeneratePredictions import save_predictions
 
 
 # Go through files and generate transits
@@ -34,4 +34,7 @@ for subdir, dirs, files in os.walk("./{}/".format(FOLDER_NAME)):
                 csvWriter = csv.writer(my_csv,delimiter=',')
                 csvWriter.writerows(lc_arr)
                 
+            save_predictions('../../knn.joblib', '{}{}/transits.csv'.format(subdir,d), '{}{}/predictions.csv'.format(subdir,d))
+        
         print("finished " + d)
+

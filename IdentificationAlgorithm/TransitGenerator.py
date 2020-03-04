@@ -65,7 +65,7 @@ def simulated_lightcurve(
     return flux
 
 
-def row_to_lightcurve(header, row, length=3197, CADENCE_LENGTH = 30):
+def row_to_lightcurve(header, row, length=3197, CADENCE_LENGTH=30):
     p = {}
 
     must_contain = ["t0","per","rp","a","inc","ecc","w"]
